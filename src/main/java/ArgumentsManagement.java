@@ -27,6 +27,8 @@ public class ArgumentsManagement {
 		System.out.println("Polynomial degree: " + maximumPowerOfEquation);
 		if (maximumPowerOfEquation == 2)
 			getRootsOfQuadraticEquation(generalPowers);
+		else if (maximumPowerOfEquation == 1)
+			solveLinearEquation(generalPowers);
 	}
 
 	private TreeMap<Integer, Double> getGeneralMap(String[] split) {
@@ -133,6 +135,17 @@ public class ArgumentsManagement {
 			System.out.println("Discriminant is strictly negative, there are no solutions");
 		}
 		System.exit(0);
+	}
+
+	public void solveLinearEquation(TreeMap<Integer, Double> map) {
+		double result = -map.get(0) / map.get(1);
+		System.out.println("The solution is:");
+		System.out.println(result);
+		System.exit(0);
+	}
+
+	public boolean isEquation(String line) {
+		return line.contains("X");
 	}
 
 }
