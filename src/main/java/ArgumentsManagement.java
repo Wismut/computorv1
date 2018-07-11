@@ -20,6 +20,16 @@ public class ArgumentsManagement {
 				throw new ArgumentsException((i == 0 ? "Left" : "Right") + " part of equation is wrong");
 			}
 		}
+		TreeMap<Integer, Double> generalPowers = getGeneralMap(split);
+		int maximumPowerOfEquation = getMaximumPowerOfEquation(generalPowers);
+		if (generalPowers.firstEntry().getValue() < 0) revertAllValues(generalPowers);
+		System.out.println("Reduced form: " + getReducedForm(generalPowers));
+		System.out.println("Polynomial degree: " + maximumPowerOfEquation);
+		if (maximumPowerOfEquation == 2)
+			getRootsOfQuadraticEquation(generalPowers);
+	}
+
+	private TreeMap<Integer, Double> getGeneralMap(String[] split) {
 		TreeMap<Integer, Double> generalPowers = new TreeMap<>();
 		Map<Integer, Double> mapOfPowersLeftPart = getMapOfPowers(split[0]);
 		Map<Integer, Double> mapOfPowersRightPart = getMapOfPowers(split[1]);
@@ -32,8 +42,7 @@ public class ArgumentsManagement {
 			if (mapOfPowersRightPart.containsKey(entry.getKey())) continue;
 			if (entry.getValue() != 0) generalPowers.put(entry.getKey(), entry.getValue());
 		}
-		int maximumPowerOfEquation = getMaximumPowerOfEquation(generalPowers);
-		if (generalPowers.get(maximumPowerOfEquation) < 0) revertAllValues(generalPowers);
+		return generalPowers;
 	}
 
 	public Map<Integer, Double> getMapOfPowers(String line) throws RuntimeException {
@@ -89,6 +98,41 @@ public class ArgumentsManagement {
 
 	public void revertAllValues(Map<Integer, Double> map) {
 		map.replaceAll((k, v) -> (v * -1));
+	}
+
+	public String getReducedForm(TreeMap<Integer, Double> map) {
+		StringBuilder result = new StringBuilder();
+		for (Map.Entry<Integer, Double> entry : map.entrySet()) {
+			Double value = entry.getValue();
+			int doubleToInt = value.intValue();
+			result.append(value > 0 ? " + " : " - ")
+					.append((value % 1 == 0) ? (doubleToInt > 0 ? doubleToInt : -doubleToInt) : (value > 0 ? value : -value))
+					.append(" * ")
+					.append("X^")
+					.append(entry.getKey());
+		}
+		result.append(" = 0");
+		result.delete(0, 3);
+		return result.toString();
+	}
+
+	public void getRootsOfQuadraticEquation(TreeMap<Integer, Double> map) {
+		Double[] result = new Double[2];
+		Double d = map.get(1) * map.get(1) - 4 * map.get(0) * map.get(2);
+		if (d > 0) {
+			result[0] = (-map.get(1) + Math.sqrt(d)) / (2 * map.get(0));
+			result[1] = (-map.get(1) - Math.sqrt(d)) / (2 * map.get(0));
+			System.out.println("Discriminant is strictly positive, the two solutions are:");
+			System.out.println(result[0]);
+			System.out.println(result[1]);
+		} else if (d == 0) {
+			result[0] = -map.get(1) / (2 * map.get(0));
+			System.out.println("Discriminant is equals zero, the one solution is:");
+			System.out.println(result[0]);
+		} else {
+			System.out.println("Discriminant is strictly negative, there are no solutions");
+		}
+		System.exit(0);
 	}
 
 }
