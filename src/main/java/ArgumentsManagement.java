@@ -37,7 +37,7 @@ public class ArgumentsManagement {
 		Map<Integer, Double> mapOfPowersRightPart = getMapOfPowers(split[1]);
 		for (Map.Entry<Integer, Double> entry : mapOfPowersRightPart.entrySet()) {
 			Double leftPower = mapOfPowersLeftPart.get(entry.getKey());
-			double power = entry.getValue() - (leftPower == null ? 0 : leftPower);
+			double power = (leftPower == null ? 0 : leftPower) - entry.getValue();
 			if (power != 0) generalPowers.put(entry.getKey(), power);
 		}
 		for (Map.Entry<Integer, Double> entry : mapOfPowersLeftPart.entrySet()) {
@@ -122,13 +122,13 @@ public class ArgumentsManagement {
 		Double[] result = new Double[2];
 		Double d = map.get(1) * map.get(1) - 4 * map.get(0) * map.get(2);
 		if (d > 0) {
-			result[0] = (-map.get(1) + Math.sqrt(d)) / (2 * map.get(0));
-			result[1] = (-map.get(1) - Math.sqrt(d)) / (2 * map.get(0));
+			result[0] = (-map.get(1) + Math.sqrt(d)) / (2 * map.get(2));
+			result[1] = (-map.get(1) - Math.sqrt(d)) / (2 * map.get(2));
 			System.out.println("Discriminant is strictly positive, the two solutions are:");
 			System.out.println(result[0]);
 			System.out.println(result[1]);
 		} else if (d == 0) {
-			result[0] = -map.get(1) / (2 * map.get(0));
+			result[0] = -map.get(1) / (2 * map.get(2));
 			System.out.println("Discriminant is equals zero, the one solution is:");
 			System.out.println(result[0]);
 		} else {
