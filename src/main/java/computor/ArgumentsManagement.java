@@ -1,3 +1,5 @@
+package computor;
+
 import java.util.*;
 
 public class ArgumentsManagement {
@@ -139,7 +141,8 @@ public class ArgumentsManagement {
 
 	public void getRootsOfQuadraticEquation(TreeMap<Integer, Double> map) {
 		Double[] result = new Double[2];
-		Double d = map.get(1) * map.get(1) - 4 * map.get(0) * map.get(2);
+		double c = map.get(0) == null ? 0 : map.get(0);
+		Double d = map.get(1) * map.get(1) - 4 * c * map.get(2);
 		if (d > 0) {
 			result[0] = (-map.get(1) + Math.sqrt(d)) / (2 * map.get(2));
 			result[1] = (-map.get(1) - Math.sqrt(d)) / (2 * map.get(2));

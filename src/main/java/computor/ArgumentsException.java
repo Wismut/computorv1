@@ -1,3 +1,5 @@
+package computor;
+
 public class ArgumentsException extends RuntimeException {
 	public ArgumentsException() {
 	}
