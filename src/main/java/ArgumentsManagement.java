@@ -2,7 +2,7 @@ import java.util.*;
 
 public class ArgumentsManagement {
 	public void checkArgumentPresent(int count) {
-		if (count == 1) throw new ArgumentsException("Please, input something");
+		if (count == 0) throw new ArgumentsException("Please, input something");
 	}
 
 	public void checkArgumentValid(String line) {
@@ -11,6 +11,7 @@ public class ArgumentsManagement {
 		checkArgumentContainsOnlyRightCharacters(line);
 		if (line.chars().filter(ch -> ch == '=').count() != 1)
 			throw new ArgumentsException("Wrong count of '='");
+		if (!line.contains("X")) throw new ArgumentsException("The argument is not an equation");
 		String[] split = line.split("=");
 		for (int i = 0; i < split.length; i++) {
 			try {
@@ -23,12 +24,23 @@ public class ArgumentsManagement {
 		TreeMap<Integer, Double> generalPowers = getGeneralMap(split);
 		int maximumPowerOfEquation = getMaximumPowerOfEquation(generalPowers);
 		if (generalPowers.firstEntry().getValue() < 0) revertAllValues(generalPowers);
+		if (maximumPowerOfEquation == 2) {
+			printReducedFormAndPolynomialDegree(generalPowers, maximumPowerOfEquation);
+			getRootsOfQuadraticEquation(generalPowers);
+		} else if (maximumPowerOfEquation == 1) {
+			printReducedFormAndPolynomialDegree(generalPowers, maximumPowerOfEquation);
+			solveLinearEquation(generalPowers);
+		} else if (isEquation(line)) {
+			printReducedFormAndPolynomialDegree(generalPowers, maximumPowerOfEquation);
+			System.out.println("All the real numbers are solution");
+		} else {
+			System.out.println("The argument is not an equation");
+		}
+	}
+
+	private void printReducedFormAndPolynomialDegree(TreeMap<Integer, Double> generalPowers, int maximumPowerOfEquation) {
 		System.out.println("Reduced form: " + getReducedForm(generalPowers));
 		System.out.println("Polynomial degree: " + maximumPowerOfEquation);
-		if (maximumPowerOfEquation == 2)
-			getRootsOfQuadraticEquation(generalPowers);
-		else if (maximumPowerOfEquation == 1)
-			solveLinearEquation(generalPowers);
 	}
 
 	private TreeMap<Integer, Double> getGeneralMap(String[] split) {
@@ -38,11 +50,11 @@ public class ArgumentsManagement {
 		for (Map.Entry<Integer, Double> entry : mapOfPowersRightPart.entrySet()) {
 			Double leftPower = mapOfPowersLeftPart.get(entry.getKey());
 			double power = (leftPower == null ? 0 : leftPower) - entry.getValue();
-			if (power != 0) generalPowers.put(entry.getKey(), power);
+			generalPowers.put(entry.getKey(), power);
 		}
 		for (Map.Entry<Integer, Double> entry : mapOfPowersLeftPart.entrySet()) {
 			if (mapOfPowersRightPart.containsKey(entry.getKey())) continue;
-			if (entry.getValue() != 0) generalPowers.put(entry.getKey(), entry.getValue());
+			generalPowers.put(entry.getKey(), entry.getValue());
 		}
 		return generalPowers;
 	}
@@ -62,21 +74,21 @@ public class ArgumentsManagement {
 		k = -1;
 		for (String s : split) {
 			String[] doubleAndPower = s.split(" \\* ");
-			if (doubleAndPower.length != 2) throw new ArgumentsException();
+			if (doubleAndPower.length != 2) throw new ArgumentsException("Wrong argument");
 			double coefficient = Double.parseDouble(doubleAndPower[0]);
 			if (k != -1 && !isPositive[k]) coefficient *= -1;
 			String[] xAndPower = doubleAndPower[1].split("\\^");
 			if (xAndPower.length != 2 || !xAndPower[0].equals("X"))
-				throw new ArgumentsException();
+				throw new ArgumentsException("Wrong argument");
 			int power = Integer.parseInt(xAndPower[1]);
-			if (power < 0) throw new ArgumentsException();
+			if (power < 0) throw new ArgumentsException("Wrong argument");
 			if (powers.containsKey(power))
 				powers.put(power, powers.get(power) + coefficient);
 			else
 				powers.put(power, coefficient);
 			k++;
 		}
-		if (powers.isEmpty()) throw new ArgumentsException();
+		if (powers.isEmpty()) throw new ArgumentsException("Wrong argument");
 		return powers;
 	}
 
@@ -89,10 +101,17 @@ public class ArgumentsManagement {
 	}
 
 	public int getMaximumPowerOfEquation(TreeMap<Integer, Double> powers) {
-		int result = powers.lastKey();
+		int result = 0;
+		NavigableSet<Integer> descendingKeySet = powers.descendingKeySet();
+		for (Integer integer : descendingKeySet) {
+			if (powers.get(integer) != 0) {
+				result = integer;
+				break;
+			}
+		}
 		if (result > 2) {
-			System.out.println("Polynomial degree: " + result);
-			System.out.println("The polynomial degree is stricly greater than 2, I can't solve.");
+			printReducedFormAndPolynomialDegree(powers, result);
+			System.out.println("The polynomial degree is strictly greater than 2, I can't solve.");
 			System.exit(0);
 		}
 		return result;
@@ -107,7 +126,7 @@ public class ArgumentsManagement {
 		for (Map.Entry<Integer, Double> entry : map.entrySet()) {
 			Double value = entry.getValue();
 			int doubleToInt = value.intValue();
-			result.append(value > 0 ? " + " : " - ")
+			result.append(value >= 0 ? " + " : " - ")
 					.append((value % 1 == 0) ? (doubleToInt > 0 ? doubleToInt : -doubleToInt) : (value > 0 ? value : -value))
 					.append(" * ")
 					.append("X^")
