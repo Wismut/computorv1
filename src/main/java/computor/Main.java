@@ -1,5 +1,7 @@
 package computor;
 
+import sun.reflect.generics.tree.Tree;
+
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.TreeMap;
@@ -30,7 +32,7 @@ public class Main {
 			line = line.trim();
 			if (line.isEmpty()) throw new ArgumentsException("Empty argument");
 			checkArgumentContainsOnlyRightCharacters(line);
-			System.out.println(line.chars().filter(ch -> ch == '=').count());
+			System.out.println(line);
 			if (line.chars().filter(ch -> ch == '=').count() != 1)
 				throw new ArgumentsException("Wrong count of '='");
 			if (!line.contains("X")) throw new ArgumentsException("The argument is not an equation");
@@ -54,7 +56,7 @@ public class Main {
 				solveLinearEquation(generalPowers);
 			} else if (isEquation(line)) {
 				printReducedFormAndPolynomialDegree(generalPowers, maximumPowerOfEquation);
-				System.out.println("All the real numbers are solution");
+				solveZeroPowerEquation(generalPowers);
 			} else {
 				System.out.println("The argument is not an equation");
 			}
@@ -185,6 +187,14 @@ public class Main {
 			double result = -a / map.get(1);
 			System.out.println("The solution is:");
 			System.out.println(result);
+			System.exit(0);
+		}
+
+		public void solveZeroPowerEquation(TreeMap<Integer, Double> map) {
+			if (map.get(0) == 0)
+				System.out.println("All the real numbers are solution");
+			else
+				System.out.println("There are no solutions");
 			System.exit(0);
 		}
 
