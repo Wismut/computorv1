@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-computor.Main-Class: computor.Main
+Main-Class: computor.Main
